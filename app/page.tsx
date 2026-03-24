@@ -1,6 +1,19 @@
 import { CampaignStatusActions } from "@/components/CampaignStatusActions";
 import { SignOutButton } from "@/components/SignOutButton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button-variants";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { createClient } from "@/lib/supabase/server";
+import { cn } from "@/lib/utils";
 import type { CampaignRow } from "@/types/campaign";
 import Link from "next/link";
 
@@ -32,17 +45,17 @@ export default async function DashboardPage({
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-4 py-10">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             Campaigns
           </h1>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             Manage HTML5 and static banner campaigns.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/campaigns/new"
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className={cn(buttonVariants({ size: "lg" }))}
           >
             New campaign
           </Link>
@@ -50,7 +63,7 @@ export default async function DashboardPage({
         </div>
       </header>
 
-      <div className="flex flex-wrap gap-2 border-b border-zinc-200 pb-3 dark:border-zinc-700">
+      <div className="flex flex-wrap gap-2 border-b border-border pb-3">
         <FilterLink
           href="/?status=all"
           label="All"
@@ -69,85 +82,88 @@ export default async function DashboardPage({
       </div>
 
       {error ? (
-        <p className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-800 dark:bg-red-950 dark:text-red-200">
-          {error.message}
-        </p>
+        <Alert variant="destructive">
+          <AlertDescription>{error.message}</AlertDescription>
+        </Alert>
       ) : null}
 
       {list.length === 0 && !error ? (
-        <div className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/80 px-6 py-16 text-center dark:border-zinc-600 dark:bg-zinc-900/40">
-          <p className="text-zinc-700 dark:text-zinc-300">
-            No campaigns yet. Create one to get started.
-          </p>
-          <Link
-            href="/campaigns/new"
-            className="mt-4 inline-block text-sm font-medium text-sky-700 underline-offset-2 hover:underline dark:text-sky-400"
-          >
-            New campaign
-          </Link>
-        </div>
+        <Card className="border-dashed shadow-none">
+          <CardHeader className="text-center">
+            <CardTitle className="text-base font-medium">
+              No campaigns yet
+            </CardTitle>
+            <CardDescription>
+              Create a campaign to start defining banner sizes and assets.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center pb-8">
+            <Link
+              href="/campaigns/new"
+              className={cn(buttonVariants({ variant: "secondary" }))}
+            >
+              New campaign
+            </Link>
+          </CardContent>
+        </Card>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-zinc-200 bg-zinc-50 text-xs font-semibold uppercase text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-400">
-              <tr>
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Client</th>
-                <th className="hidden px-4 py-3 sm:table-cell">Brand</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Deliverables</th>
-                <th className="hidden px-4 py-3 md:table-cell">Created</th>
-                <th className="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-700">
+        <Card className="gap-0 overflow-hidden p-0 py-0 shadow-md">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead>Name</TableHead>
+                <TableHead>Client</TableHead>
+                <TableHead className="hidden sm:table-cell">Brand</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Deliverables</TableHead>
+                <TableHead className="hidden md:table-cell">Created</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {list.map((c) => (
-                <tr
-                  key={c.id}
-                  className="hover:bg-zinc-50/80 dark:hover:bg-zinc-800/50"
-                >
-                  <td className="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
+                <TableRow key={c.id}>
+                  <TableCell className="font-medium">
                     <Link
                       href={`/campaigns/${c.id}`}
-                      className="text-sky-700 hover:underline dark:text-sky-400"
+                      className="text-primary underline-offset-4 hover:underline"
                     >
                       {c.name}
                     </Link>
-                  </td>
-                  <td className="px-4 py-3 text-zinc-700 dark:text-zinc-300">
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
                     {c.client || "—"}
-                  </td>
-                  <td className="hidden px-4 py-3 text-zinc-700 dark:text-zinc-300 sm:table-cell">
+                  </TableCell>
+                  <TableCell className="hidden text-muted-foreground sm:table-cell">
                     {c.brand || "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={c.status === "active" ? "default" : "secondary"}
                       className={
                         c.status === "active"
-                          ? "inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200"
-                          : "inline-flex rounded-full bg-zinc-200 px-2 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-700 dark:text-zinc-200"
+                          ? "bg-emerald-600/15 text-emerald-900 hover:bg-emerald-600/20 dark:bg-emerald-500/20 dark:text-emerald-100 dark:hover:bg-emerald-500/25"
+                          : undefined
                       }
                     >
                       {c.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
-                    0
-                  </td>
-                  <td className="hidden px-4 py-3 text-zinc-600 dark:text-zinc-400 md:table-cell">
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">0</TableCell>
+                  <TableCell className="hidden text-muted-foreground md:table-cell">
                     {new Date(c.created_at).toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-right">
+                  </TableCell>
+                  <TableCell className="text-right">
                     <CampaignStatusActions
                       campaignId={c.id}
                       status={c.status}
                     />
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </TableBody>
+          </Table>
+        </Card>
       )}
     </div>
   );
@@ -165,11 +181,13 @@ function FilterLink({
   return (
     <Link
       href={href}
-      className={
-        active
-          ? "rounded-full bg-zinc-900 px-3 py-1 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
-          : "rounded-full px-3 py-1 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
-      }
+      className={cn(
+        buttonVariants({
+          variant: active ? "default" : "ghost",
+          size: "sm",
+        }),
+        "rounded-full"
+      )}
     >
       {label}
     </Link>

@@ -1,4 +1,8 @@
+import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
+import { cn } from "@/lib/utils";
 import type { CampaignRow } from "@/types/campaign";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -22,29 +26,40 @@ export default async function CampaignWorkspacePage({ params }: Props) {
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-4 py-10">
-      <header className="flex flex-col gap-2 border-b border-zinc-200 pb-6 dark:border-zinc-700">
+      <header className="flex flex-col gap-2 border-b border-border pb-6">
         <Link
           href="/"
-          className="text-sm font-medium text-sky-700 hover:underline dark:text-sky-400"
+          className={cn(
+            buttonVariants({ variant: "ghost", size: "sm" }),
+            "w-fit px-0"
+          )}
         >
           ← Campaigns
         </Link>
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           {c.name}
         </h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm text-muted-foreground">
           {c.client && `${c.client}`}
           {c.client && c.brand ? " · " : ""}
           {c.brand && `${c.brand}`}
         </p>
       </header>
 
-      <div className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/80 px-6 py-12 text-center dark:border-zinc-600 dark:bg-zinc-900/40">
-        <p className="text-zinc-700 dark:text-zinc-300">
-          Deliverables and assets workspace arrives in{" "}
-          <span className="font-medium">Phase 2</span>.
-        </p>
-      </div>
+      <Card className="border-dashed shadow-none">
+        <CardHeader>
+          <CardTitle className="text-base font-medium">Workspace</CardTitle>
+          <CardDescription>
+            Deliverables and assets arrive in{" "}
+            <span className="font-medium text-foreground">Phase 2</span>.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button variant="secondary" disabled>
+            Coming soon
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { setCampaignStatus } from "@/app/actions/campaigns";
+import { Button } from "@/components/ui/button";
 import type { CampaignStatus } from "@/types/campaign";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -23,17 +24,15 @@ export function CampaignStatusActions({ campaignId, status }: Props) {
   }
 
   return (
-    <button
+    <Button
       type="button"
+      variant="link"
+      size="sm"
+      className="h-auto px-0"
       onClick={toggle}
       disabled={pending}
-      className="rounded-md px-2 py-1 text-sm font-medium text-sky-700 underline-offset-2 hover:underline disabled:opacity-50 dark:text-sky-400"
     >
-      {pending
-        ? "…"
-        : status === "active"
-          ? "Archive"
-          : "Unarchive"}
-    </button>
+      {pending ? "…" : status === "active" ? "Archive" : "Unarchive"}
+    </Button>
   );
 }
